@@ -173,8 +173,13 @@ const App: React.FC = () => {
           </motion.div>
 
           {/* Footer */}
-          <motion.div className="mt-10 text-gray-300 text-xs text-center font-medium tracking-wide relative z-10"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+          <motion.div
+            style={{ color: '#000000' }}
+            className="mt-10 text-xs text-center font-medium tracking-wide relative z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
             Designed by Arasukirubanandhan <span className="text-red-300">❤️</span>
           </motion.div>
         </motion.div>
