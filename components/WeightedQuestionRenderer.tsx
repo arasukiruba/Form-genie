@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { FormItem, QuestionType } from '../types';
-import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { motion, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
 
 interface WeightedQuestionRendererProps {
   item: FormItem;
@@ -299,18 +299,28 @@ export const WeightedQuestionRenderer: React.FC<WeightedQuestionRendererProps> =
         </span>
       </div>
 
-      {/* Gender Toggle — hidden when another question already has it active */}
-      {(item.type === QuestionType.MULTIPLE_CHOICE || item.type === QuestionType.DROPDOWN) && onToggleSpecialMode && showGenderToggle && (
-        <div className="flex justify-end mb-4">
-          <label className="flex items-center cursor-pointer select-none text-xs text-black/50 hover:text-black transition-colors gap-3">
-            <span className="uppercase font-bold tracking-wide">Gender?</span>
-            <IOSToggle
-              checked={specialMode === 'GENDER'}
-              onChange={(checked) => onToggleSpecialMode(checked ? 'GENDER' : undefined)}
-              variant="pink"
-            />
-          </label>
-        </div>
+      {/* Gender Toggle — smoke exit / fade entry */}
+      {(item.type === QuestionType.MULTIPLE_CHOICE || item.type === QuestionType.DROPDOWN) && onToggleSpecialMode && (
+        <AnimatePresence mode="wait">
+          {showGenderToggle && (
+            <motion.div
+              key={`gender-toggle-${item.id}`}
+              className="flex justify-end mb-4"
+              initial={{ opacity: 0, scale: 0.8, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
+              exit={{ opacity: 0, scale: 1.3, filter: 'blur(12px)', transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
+            >
+              <label className="flex items-center cursor-pointer select-none text-xs text-black/50 hover:text-black transition-colors gap-3">
+                <span className="uppercase font-bold tracking-wide">Gender?</span>
+                <IOSToggle
+                  checked={specialMode === 'GENDER'}
+                  onChange={(checked) => onToggleSpecialMode(checked ? 'GENDER' : undefined)}
+                  variant="pink"
+                />
+              </label>
+            </motion.div>
+          )}
+        </AnimatePresence>
       )}
 
       {renderContent()}

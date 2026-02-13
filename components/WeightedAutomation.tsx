@@ -392,8 +392,13 @@ export const WeightedAutomation: React.FC<WeightedAutomationProps> = ({ form, on
         }
     };
 
+    // Toggle visibility: only one Name and one Gender toggle active at a time
+    const activeGenderId = Object.entries(specialModes).find(([_, mode]) => mode === 'GENDER')?.[0];
+    const activeNameId = Object.entries(specialModes).find(([_, mode]) => mode === 'NAME')?.[0];
+
     const renderItem = (item: FormItem, idx: number) => {
         if ([QuestionType.MULTIPLE_CHOICE, QuestionType.DROPDOWN, QuestionType.CHECKBOXES, QuestionType.LINEAR_SCALE].includes(item.type)) {
+            const canShowGender = !activeGenderId || activeGenderId === item.id;
             return (
                 <motion.div key={item.id}
                     initial={{ opacity: 0, y: 16 }}
@@ -405,6 +410,7 @@ export const WeightedAutomation: React.FC<WeightedAutomationProps> = ({ form, on
                         onWeightChange={(newW) => setWeights(prev => ({ ...prev, [item.id]: newW }))}
                         specialMode={specialModes[item.id] === 'GENDER' ? 'GENDER' : undefined}
                         onToggleSpecialMode={(mode) => setSpecialModes(prev => ({ ...prev, [item.id]: mode }))}
+                        showGenderToggle={canShowGender}
                     />
                 </motion.div>
             );
@@ -450,6 +456,7 @@ export const WeightedAutomation: React.FC<WeightedAutomationProps> = ({ form, on
 
         if (item.type === QuestionType.SHORT_ANSWER) {
             const isNameMode = specialModes[item.id] === 'NAME';
+            const canShowNameToggle = !activeNameId || activeNameId === item.id;
             return (
                 <motion.div key={item.id} className="card p-6 mb-4"
                     initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
@@ -458,15 +465,25 @@ export const WeightedAutomation: React.FC<WeightedAutomationProps> = ({ form, on
                     <div className="border-b border-gray-100 pb-2 mb-4">
                         <span className="text-gray-300 text-sm">Short answer text</span>
                     </div>
-                    <label className="flex items-center cursor-pointer select-none group gap-3">
-                        <button type="button" onClick={() => setSpecialModes(prev => ({ ...prev, [item.id]: isNameMode ? undefined : 'NAME' }))}
-                            className={`toggle-track ${isNameMode ? 'active' : ''}`}>
-                            <div className={`toggle-knob ${isNameMode ? 'active' : ''}`} />
-                        </button>
-                        <span className={`text-xs font-semibold uppercase tracking-wide transition-colors ${isNameMode ? 'text-[#4285F4]' : 'text-gray-400'}`}>
-                            {isNameMode ? "Generating Names" : "Auto-fill: N/A"}
-                        </span>
-                    </label>
+                    <AnimatePresence mode="wait">
+                        {canShowNameToggle && (
+                            <motion.label
+                                key={`name-toggle-${item.id}`}
+                                className="flex items-center cursor-pointer select-none group gap-3"
+                                initial={{ opacity: 0, scale: 0.8, filter: 'blur(8px)' }}
+                                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
+                                exit={{ opacity: 0, scale: 1.3, filter: 'blur(12px)', transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
+                            >
+                                <button type="button" onClick={() => setSpecialModes(prev => ({ ...prev, [item.id]: isNameMode ? undefined : 'NAME' }))}
+                                    className={`toggle-track ${isNameMode ? 'active' : ''}`}>
+                                    <div className={`toggle-knob ${isNameMode ? 'active' : ''}`} />
+                                </button>
+                                <span className={`text-xs font-semibold uppercase tracking-wide transition-colors ${isNameMode ? 'text-[#4285F4]' : 'text-gray-400'}`}>
+                                    {isNameMode ? "Generating Names" : "Generate Names"}
+                                </span>
+                            </motion.label>
+                        )}
+                    </AnimatePresence>
                 </motion.div>
             );
         }
