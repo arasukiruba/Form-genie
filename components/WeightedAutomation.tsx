@@ -515,12 +515,7 @@ export const WeightedAutomation: React.FC<WeightedAutomationProps> = ({ form, on
                     <button onClick={onBack} className="mr-4 text-gray-400 hover:text-gray-700 transition-colors p-1.5 hover:bg-gray-50 rounded-lg">
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <div className="flex items-center">
-                        <div className="bg-gradient-to-br from-[#4285F4] to-[#5a9cf5] p-1.5 rounded-lg mr-3 shadow-sm shadow-blue-200">
-                            <Sparkles className="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span className="text-[15px] font-semibold text-gray-800 truncate max-w-[200px] sm:max-w-md">{form.title}</span>
-                    </div>
+                    <span className="text-[15px] font-semibold text-gray-800">Configure weightage and automate submissions</span>
                     <div className="ml-auto">
                         <button onClick={handleResetWeights} className="text-gray-300 hover:text-gray-600 hover:bg-gray-50 p-2 rounded-lg transition-all" title="Reset">
                             <RotateCcw className="w-4 h-4" />
