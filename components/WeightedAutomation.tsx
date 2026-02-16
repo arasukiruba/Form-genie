@@ -293,9 +293,22 @@ export const WeightedAutomation: React.FC<WeightedAutomationProps> = ({ form, on
             // Skip if already generated (Gender/Name linkage)
             if (batchSchedule[item.id]) return;
 
-            // 1. Text Fields -> Fixed "N/A" (Default)
+            // 1. Text Fields
             if (item.type === QuestionType.SHORT_ANSWER || item.type === QuestionType.PARAGRAPH) {
-                batchSchedule[item.id] = Array(targetCount).fill("N/A");
+                if (item.type === QuestionType.SHORT_ANSWER && specialModes[item.id] === 'NAME') {
+                    // Unlinked Name Generation: 60% Male, 40% Female
+                    const maleCount = Math.floor(targetCount * 0.6);
+                    const femaleCount = targetCount - maleCount;
+                    const names: string[] = [];
+
+                    for (let k = 0; k < maleCount; k++) names.push(MALE_NAMES[Math.floor(Math.random() * MALE_NAMES.length)]);
+                    for (let k = 0; k < femaleCount; k++) names.push(FEMALE_NAMES[Math.floor(Math.random() * FEMALE_NAMES.length)]);
+
+                    // Shuffle
+                    batchSchedule[item.id] = names.sort(() => Math.random() - 0.5);
+                } else {
+                    batchSchedule[item.id] = Array(targetCount).fill("N/A");
+                }
             }
             // 2. Grids -> Placeholder (Generated on fly)
             else if (item.type === QuestionType.MULTIPLE_CHOICE_GRID || item.type === QuestionType.CHECKBOX_GRID) {
